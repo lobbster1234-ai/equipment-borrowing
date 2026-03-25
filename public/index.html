@@ -374,16 +374,27 @@
       font-size: 0.9rem;
       color: var(--accent);
       margin-bottom: 12px;
-      padding: 8px 12px;
+      padding: 10px 14px;
       background: var(--accent-bg);
       border-radius: 6px;
       display: flex;
       align-items: center;
       gap: 8px;
+      cursor: pointer;
+      user-select: none;
+      transition: all 0.2s;
+    }
+    .category-title:hover {
+      background: var(--accent);
+      color: white;
     }
     .category-title::before {
       content: '▶';
       font-size: 0.7rem;
+      transition: transform 0.2s;
+    }
+    .category-title.collapsed::before {
+      transform: rotate(-90deg);
     }
     .category-title span {
       margin-left: auto;
@@ -392,6 +403,17 @@
       background: white;
       padding: 2px 8px;
       border-radius: 10px;
+    }
+    .category-title.collapsed span {
+      display: none;
+    }
+    .category-section .table-wrapper {
+      overflow: hidden;
+      transition: max-height 0.3s ease, opacity 0.3s ease;
+    }
+    .category-section.collapsed .table-wrapper {
+      max-height: 0;
+      opacity: 0;
     }
     /* Modal */
     .modal {
@@ -656,6 +678,13 @@
       }
     }
 
+    // Toggle category collapse
+    function toggleCategory(element) {
+      const section = element.closest('.category-section');
+      element.classList.toggle('collapsed');
+      section.classList.toggle('collapsed');
+    }
+
     // Render equipment
     function renderEquipment(equipment) {
       const container = document.getElementById('equipment-list');
@@ -671,7 +700,7 @@
       for (const [category, items] of Object.entries(grouped)) {
         html += `
           <div class="category-section">
-            <div class="category-title">${category}<span>${items.length} 項</span></div>
+            <div class="category-title collapsed" onclick="toggleCategory(this)">${category}<span>${items.length} 項</span></div>
             <div class="table-wrapper">
               <table>
                 <thead>
@@ -763,7 +792,7 @@
         for (const [category, items] of Object.entries(grouped)) {
           html += `
             <div class="category-section">
-              <div class="category-title">${category}<span>${items.length} 項</span></div>
+              <div class="category-title collapsed" onclick="toggleCategory(this)">${category}<span>${items.length} 項</span></div>
               <div class="table-wrapper">
                 <table>
                   <thead>
