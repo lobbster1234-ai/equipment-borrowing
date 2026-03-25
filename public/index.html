@@ -1,0 +1,929 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>儀器設備借用系統</title>
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500;700;900&family=Noto+Sans+TC:wght@400;500;700&family=JetBrains+Mono:wght@500&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg: #f5f7fa;
+      --card: #ffffff;
+      --accent: #0052cc;
+      --accent-hover: #003d99;
+      --accent-light: #3385ff;
+      --accent-bg: #e6f0ff;
+      --success: #006644;
+      --success-bg: #d4eddc;
+      --warning: #b35c00;
+      --warning-bg: #fff3d4;
+      --danger: #c41e3a;
+      --danger-bg: #fce4e8;
+      --text: #1a1a1a;
+      --text-secondary: #434343;
+      --text-muted: #737373;
+      --border: #d0d5dd;
+      --border-light: #ebedf0;
+    }
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    body {
+      font-family: 'Noto Sans TC', sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.5;
+      min-height: 100vh;
+    }
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 40px 24px;
+    }
+    /* Header */
+    header {
+      background: #ffffff;
+      border: 3px solid var(--accent);
+      border-radius: 16px;
+      padding: 32px 40px;
+      margin-bottom: 32px;
+      position: relative;
+      box-shadow: 0 4px 20px rgba(0, 82, 204, 0.15);
+    }
+    header::before {
+      content: '';
+      position: absolute;
+      top: -3px;
+      left: -3px;
+      right: -3px;
+      bottom: -3px;
+      border: 3px solid var(--accent);
+      border-radius: 18px;
+      background: linear-gradient(135deg, var(--accent), var(--accent-light), var(--accent));
+      z-index: -1;
+      opacity: 0.3;
+    }
+    .header-content {
+      position: relative;
+      z-index: 1;
+    }
+    header h1 {
+      font-family: 'Orbitron', sans-serif;
+      font-size: 1.8rem;
+      font-weight: 700;
+      color: var(--accent);
+      letter-spacing: 3px;
+      display: flex;
+      align-items: center;
+      gap: 14px;
+    }
+    header h1 .icon {
+      width: 44px;
+      height: 44px;
+      background: var(--accent-bg);
+      border: 2px solid var(--accent);
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.4rem;
+    }
+    header h1 .icon::before {
+      content: '◈';
+      color: var(--accent);
+    }
+    header p {
+      color: var(--text-muted);
+      margin-top: 8px;
+      font-size: 0.9rem;
+      font-family: 'JetBrains Mono', monospace;
+      letter-spacing: 1px;
+    }
+    /* Tabs */
+    .tabs {
+      display: flex;
+      gap: 8px;
+      margin-bottom: 24px;
+      background: var(--card);
+      padding: 6px;
+      border-radius: 12px;
+      border: 1px solid var(--border-light);
+      box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+    }
+    .tab {
+      flex: 1;
+      padding: 14px 20px;
+      background: transparent;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      font-size: 0.9rem;
+      font-weight: 600;
+      font-family: 'Noto Sans TC', sans-serif;
+      color: var(--text-muted);
+      transition: all 0.2s;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+    }
+    .tab:hover:not(.active) {
+      color: var(--accent);
+      background: var(--accent-bg);
+    }
+    .tab.active {
+      background: var(--accent);
+      color: white;
+      box-shadow: 0 4px 12px rgba(0, 82, 204, 0.3);
+    }
+    .tab-icon {
+      font-size: 1rem;
+    }
+    /* Sections */
+    .section {
+      display: none;
+    }
+    .section.active {
+      display: block;
+      animation: fadeIn 0.25s ease;
+    }
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(8px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    /* Cards */
+    .card {
+      background: var(--card);
+      border: 1px solid var(--border-light);
+      border-radius: 16px;
+      padding: 28px;
+      margin-bottom: 20px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+    }
+    .card-header {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 20px;
+      padding-bottom: 16px;
+      border-bottom: 2px solid var(--accent-bg);
+    }
+    .card-header h2 {
+      font-size: 1.1rem;
+      font-weight: 700;
+      color: var(--text);
+      text-transform: uppercase;
+      letter-spacing: 1px;
+    }
+    .card-header::before {
+      content: '';
+      width: 4px;
+      height: 22px;
+      background: var(--accent);
+      border-radius: 2px;
+    }
+    /* Tables */
+    .table-wrapper {
+      overflow-x: auto;
+      border-radius: 10px;
+      border: 1px solid var(--border-light);
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      min-width: 750px;
+    }
+    th {
+      background: #f8f9fa;
+      padding: 14px 16px;
+      text-align: left;
+      font-weight: 700;
+      font-size: 0.8rem;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      color: var(--accent);
+      border-bottom: 2px solid var(--accent-bg);
+      white-space: nowrap;
+    }
+    td {
+      padding: 14px 16px;
+      border-bottom: 1px solid var(--border-light);
+      font-size: 0.95rem;
+      color: var(--text-secondary);
+    }
+    tbody tr {
+      transition: background 0.15s;
+    }
+    tbody tr:hover {
+      background: var(--accent-bg);
+    }
+    tbody tr:last-child td {
+      border-bottom: none;
+    }
+    /* Column widths - fixed for alignment */
+    th:nth-child(1), td:nth-child(1) { width: 22%; }
+    th:nth-child(2), td:nth-child(2) { width: 10%; text-align: center; }
+    th:nth-child(3), td:nth-child(3) { width: 14%; }
+    th:nth-child(4), td:nth-child(4) { width: 14%; }
+    th:nth-child(5), td:nth-child(5) { width: 16%; }
+    th:nth-child(6), td:nth-child(6) { width: 24%; text-align: center; }
+    /* Badges */
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 5px 12px;
+      border-radius: 6px;
+      font-size: 0.75rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+    .badge::before {
+      content: '';
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+    }
+    .badge-available {
+      background: var(--success-bg);
+      color: var(--success);
+      border: 1px solid rgba(0, 102, 68, 0.2);
+    }
+    .badge-available::before {
+      background: var(--success);
+    }
+    .badge-borrowed {
+      background: var(--warning-bg);
+      color: var(--warning);
+      border: 1px solid rgba(179, 92, 0, 0.2);
+    }
+    .badge-borrowed::before {
+      background: var(--warning);
+      animation: pulse 1.5s infinite;
+    }
+    @keyframes pulse {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.3; }
+    }
+    /* Buttons */
+    .btn {
+      padding: 9px 18px;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      font-size: 0.8rem;
+      font-weight: 700;
+      font-family: 'Noto Sans TC', sans-serif;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      transition: all 0.2s;
+    }
+    .btn-borrow {
+      background: var(--accent);
+      color: white;
+    }
+    .btn-borrow:hover {
+      background: var(--accent-hover);
+      box-shadow: 0 4px 12px rgba(0, 82, 204, 0.3);
+    }
+    .btn-return {
+      background: var(--success);
+      color: white;
+    }
+    .btn-return:hover {
+      background: #005533;
+      box-shadow: 0 4px 12px rgba(0, 102, 68, 0.3);
+    }
+    .btn-add {
+      background: linear-gradient(135deg, #667eea, #764ba2);
+      color: white;
+    }
+    .btn-add:hover {
+      box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+      transform: translateY(-1px);
+    }
+    .btn-delete {
+      background: transparent;
+      color: var(--danger);
+      border: 1px solid var(--danger);
+      padding: 7px 14px;
+      font-size: 0.75rem;
+    }
+    .btn-delete:hover:not(:disabled) {
+      background: var(--danger);
+      color: white;
+    }
+    .btn-delete:disabled {
+      opacity: 0.3;
+      cursor: not-allowed;
+    }
+    /* Form */
+    .form-row {
+      display: flex;
+      gap: 16px;
+      margin-bottom: 16px;
+    }
+    .form-group {
+      flex: 1;
+    }
+    .form-group label {
+      display: block;
+      margin-bottom: 6px;
+      font-weight: 600;
+      font-size: 0.8rem;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      color: var(--text-muted);
+    }
+    .form-group input {
+      width: 100%;
+      padding: 12px 14px;
+      background: #fafbfc;
+      border: 2px solid var(--border);
+      border-radius: 8px;
+      color: var(--text);
+      font-size: 0.95rem;
+      font-family: 'Noto Sans TC', sans-serif;
+      transition: all 0.2s;
+    }
+    .form-group input:focus {
+      outline: none;
+      border-color: var(--accent);
+      background: white;
+      box-shadow: 0 0 0 3px var(--accent-bg);
+    }
+    .form-group input:disabled {
+      background: #f0f0f0;
+      color: var(--text-muted);
+    }
+    .form-group input::placeholder {
+      color: #999;
+    }
+    /* Category sections */
+    .category-section {
+      margin-bottom: 24px;
+    }
+    .category-section:last-child {
+      margin-bottom: 0;
+    }
+    .category-title {
+      font-weight: 700;
+      font-size: 0.9rem;
+      color: var(--accent);
+      margin-bottom: 12px;
+      padding: 8px 12px;
+      background: var(--accent-bg);
+      border-radius: 6px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .category-title::before {
+      content: '▶';
+      font-size: 0.7rem;
+    }
+    .category-title span {
+      margin-left: auto;
+      font-size: 0.8rem;
+      color: var(--text-muted);
+      background: white;
+      padding: 2px 8px;
+      border-radius: 10px;
+    }
+    /* Modal */
+    .modal {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.5);
+      backdrop-filter: blur(4px);
+      justify-content: center;
+      align-items: center;
+      z-index: 1000;
+    }
+    .modal.show {
+      display: flex;
+    }
+    .modal-content {
+      background: var(--card);
+      border-radius: 16px;
+      padding: 32px;
+      max-width: 440px;
+      width: 90%;
+      box-shadow: 0 20px 60px rgba(0,0,0,0.2);
+      animation: modalIn 0.25s ease;
+    }
+    @keyframes modalIn {
+      from { opacity: 0; transform: scale(0.95) translateY(-10px); }
+      to { opacity: 1; transform: scale(1) translateY(0); }
+    }
+    .modal-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 24px;
+    }
+    .modal-header h3 {
+      font-family: 'Orbitron', sans-serif;
+      font-size: 1.1rem;
+      color: var(--accent);
+      letter-spacing: 2px;
+    }
+    .modal-close {
+      background: #f0f0f0;
+      border: none;
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      cursor: pointer;
+      font-size: 1.3rem;
+      color: var(--text-muted);
+      transition: all 0.2s;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .modal-close:hover {
+      background: var(--danger);
+      color: white;
+    }
+    /* Message */
+    .message {
+      padding: 14px 20px;
+      border-radius: 10px;
+      margin-bottom: 16px;
+      display: none;
+      font-weight: 600;
+      font-size: 0.95rem;
+    }
+    .message.show {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .message.success {
+      background: var(--success-bg);
+      color: var(--success);
+      border: 1px solid rgba(0, 102, 68, 0.3);
+    }
+    .message.error {
+      background: var(--danger-bg);
+      color: var(--danger);
+      border: 1px solid rgba(196, 30, 58, 0.3);
+    }
+    .message.success::before { content: '✓'; font-weight: bold; }
+    .message.error::before { content: '✕'; font-weight: bold; }
+    /* Empty state */
+    .empty-state {
+      text-align: center;
+      padding: 48px 20px;
+      color: var(--text-muted);
+      font-size: 0.95rem;
+    }
+    /* Data name styling */
+    .data-name {
+      font-weight: 700;
+      color: var(--text);
+    }
+    /* Scrollbar */
+    ::-webkit-scrollbar {
+      width: 6px;
+      height: 6px;
+    }
+    ::-webkit-scrollbar-track {
+      background: #f0f0f0;
+    }
+    ::-webkit-scrollbar-thumb {
+      background: var(--border);
+      border-radius: 3px;
+    }
+    /* Responsive */
+    @media (max-width: 768px) {
+      .container { padding: 20px 16px; }
+      header { padding: 24px; }
+      header h1 { font-size: 1.3rem; }
+      .tabs { flex-wrap: wrap; }
+      .tab { padding: 12px 14px; font-size: 0.85rem; }
+      .form-row { flex-direction: column; gap: 0; }
+      .card { padding: 20px; }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <header>
+      <div class="header-content">
+        <h1>
+          <span class="icon"></span>
+          儀器設備借用系統
+        </h1>
+        <p>EQUIPMENT MANAGEMENT SYSTEM v2.0</p>
+      </div>
+    </header>
+
+    <div class="tabs">
+      <button class="tab active" data-tab="list">
+        <span class="tab-icon">◈</span> 設備列表
+      </button>
+      <button class="tab" data-tab="records">
+        <span class="tab-icon">▤</span> 借用記錄
+      </button>
+      <button class="tab" data-tab="manage">
+        <span class="tab-icon">⚙</span> 設備管理
+      </button>
+    </div>
+
+    <!-- 設備列表 -->
+    <div id="list" class="section active">
+      <div id="message" class="message"></div>
+      <div class="card">
+        <div class="card-header">
+          <h2>設備列表</h2>
+        </div>
+        <div id="equipment-list"></div>
+      </div>
+    </div>
+
+    <!-- 借用記錄 -->
+    <div id="records" class="section">
+      <div class="card">
+        <div class="card-header">
+          <h2>借用記錄</h2>
+        </div>
+        <div class="table-wrapper">
+          <table>
+            <thead>
+              <tr>
+                <th>設備名稱</th>
+                <th>借用人</th>
+                <th>部門</th>
+                <th>電話</th>
+                <th>借用時間</th>
+                <th>歸還時間</th>
+                <th>狀態</th>
+              </tr>
+            </thead>
+            <tbody id="records-list"></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- 設備管理 -->
+    <div id="manage" class="section">
+      <div class="card">
+        <div class="card-header">
+          <h2>新增設備</h2>
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label>設備名稱 *</label>
+            <input type="text" id="new-equipment-name" placeholder="例如：投影機 C">
+          </div>
+          <div class="form-group">
+            <label>類別</label>
+            <input type="text" id="new-equipment-category" placeholder="例如：視訊設備">
+          </div>
+        </div>
+        <button class="btn btn-add" onclick="addEquipment()">+ 新增設備</button>
+      </div>
+      <div class="card">
+        <div class="card-header">
+          <h2>刪除設備</h2>
+        </div>
+        <div id="manage-equipment-list"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 借用 Modal -->
+  <div id="borrow-modal" class="modal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h3>借用設備</h3>
+        <button class="modal-close" onclick="closeBorrowModal()">×</button>
+      </div>
+      <form id="borrow-form">
+        <input type="hidden" id="borrow-equipment-id">
+        <div class="form-group">
+          <label>設備名稱</label>
+          <input type="text" id="borrow-equipment-name" disabled>
+        </div>
+        <div class="form-group">
+          <label>姓名 *</label>
+          <input type="text" id="borrow-name" required placeholder="請輸入您的姓名">
+        </div>
+        <div class="form-group">
+          <label>部門 *</label>
+          <input type="text" id="borrow-department" required placeholder="請輸入所屬部門">
+        </div>
+        <div class="form-group">
+          <label>電話 / 分機 *</label>
+          <input type="text" id="borrow-phone" required placeholder="例如：02-12345678 或 1234">
+        </div>
+        <button type="submit" class="btn btn-borrow" style="width:100%;margin-top:8px;">確認借用</button>
+      </form>
+    </div>
+  </div>
+
+  <script>
+    // Tab switching
+    document.querySelectorAll('.tab').forEach(tab => {
+      tab.addEventListener('click', () => {
+        document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+        document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+        tab.classList.add('active');
+        document.getElementById(tab.dataset.tab).classList.add('active');
+        if (tab.dataset.tab === 'records') loadRecords();
+        if (tab.dataset.tab === 'manage') loadManageEquipment();
+      });
+    });
+
+    // Load equipment
+    async function loadEquipment() {
+      try {
+        const res = await fetch('/api/equipment');
+        const data = await res.json();
+        renderEquipment(data);
+      } catch (err) {
+        showMessage('載入設備失敗', 'error');
+      }
+    }
+
+    // Render equipment
+    function renderEquipment(equipment) {
+      const container = document.getElementById('equipment-list');
+      const grouped = {};
+      
+      equipment.forEach(item => {
+        const cat = item.category || '未分類';
+        if (!grouped[cat]) grouped[cat] = [];
+        grouped[cat].push(item);
+      });
+
+      let html = '';
+      for (const [category, items] of Object.entries(grouped)) {
+        html += `
+          <div class="category-section">
+            <div class="category-title">${category}<span>${items.length} 項</span></div>
+            <div class="table-wrapper">
+              <table>
+                <thead>
+                  <tr>
+                    <th>設備名稱</th>
+                    <th>狀態</th>
+                    <th>借用人</th>
+                    <th>部門</th>
+                    <th>借用時間</th>
+                    <th>操作</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  ${items.map(item => `
+                    <tr>
+                      <td><span class="data-name">${item.name}</span></td>
+                      <td style="text-align:center;">
+                        <span class="badge ${item.is_borrowed ? 'badge-borrowed' : 'badge-available'}">
+                          ${item.is_borrowed ? '已借用' : '可借用'}
+                        </span>
+                      </td>
+                      <td>${item.borrower_name || '-'}</td>
+                      <td>${item.department || '-'}</td>
+                      <td>${item.borrow_date ? formatDate(item.borrow_date) : '-'}</td>
+                      <td style="text-align:center;">
+                        ${item.is_borrowed 
+                          ? `<button class="btn btn-return" onclick="returnEquipment(${item.id})">歸還</button>`
+                          : `<button class="btn btn-borrow" onclick="openBorrowModal(${item.id}, '${item.name.replace(/'/g, "\\'")}')">借用</button>`
+                        }
+                      </td>
+                    </tr>
+                  `).join('')}
+                </tbody>
+              </table>
+            </div>
+          </div>
+        `;
+      }
+      container.innerHTML = html || '<div class="empty-state">暫無設備資料</div>';
+    }
+
+    // Load records
+    async function loadRecords() {
+      try {
+        const res = await fetch('/api/records');
+        const data = await res.json();
+        const tbody = document.getElementById('records-list');
+        
+        if (data.length === 0) {
+          tbody.innerHTML = '<tr><td colspan="7" class="empty-state">暫無借用記錄</td></tr>';
+          return;
+        }
+        
+        tbody.innerHTML = data.map(r => `
+          <tr>
+            <td><span class="data-name">${r.equipment_name}</span></td>
+            <td>${r.borrower_name}</td>
+            <td>${r.department}</td>
+            <td>${r.phone}</td>
+            <td>${formatDate(r.borrow_date)}</td>
+            <td>${r.return_date ? formatDate(r.return_date) : '-'}</td>
+            <td style="text-align:center;">
+              <span class="badge ${r.status === 'borrowed' ? 'badge-borrowed' : 'badge-available'}">
+                ${r.status === 'borrowed' ? '借出中' : '已歸還'}
+              </span>
+            </td>
+          </tr>
+        `).join('');
+      } catch (err) {
+        console.error('載入記錄失敗:', err);
+      }
+    }
+
+    // Load equipment for management
+    async function loadManageEquipment() {
+      try {
+        const res = await fetch('/api/equipment');
+        const data = await res.json();
+        const container = document.getElementById('manage-equipment-list');
+        
+        const grouped = {};
+        data.forEach(item => {
+          const cat = item.category || '未分類';
+          if (!grouped[cat]) grouped[cat] = [];
+          grouped[cat].push(item);
+        });
+
+        let html = '';
+        for (const [category, items] of Object.entries(grouped)) {
+          html += `
+            <div class="category-section">
+              <div class="category-title">${category}<span>${items.length} 項</span></div>
+              <div class="table-wrapper">
+                <table>
+                  <thead>
+                    <tr>
+                      <th>設備名稱</th>
+                      <th>狀態</th>
+                      <th>操作</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    ${items.map(item => `
+                      <tr>
+                        <td><span class="data-name">${item.name}</span></td>
+                        <td style="text-align:center;">
+                          <span class="badge ${item.is_borrowed ? 'badge-borrowed' : 'badge-available'}">
+                            ${item.is_borrowed ? '已借用' : '可借用'}
+                          </span>
+                        </td>
+                        <td style="text-align:center;">
+                          <button class="btn btn-delete" onclick="deleteEquipment(${item.id}, '${item.name.replace(/'/g, "\\'")}')" ${item.is_borrowed ? 'disabled' : ''}>刪除</button>
+                        </td>
+                      </tr>
+                    `).join('')}
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          `;
+        }
+        container.innerHTML = html || '<div class="empty-state">暫無設備資料</div>';
+      } catch (err) {
+        console.error('載入設備失敗:', err);
+      }
+    }
+
+    // Modal functions
+    function openBorrowModal(id, name) {
+      document.getElementById('borrow-equipment-id').value = id;
+      document.getElementById('borrow-form').reset();
+      document.getElementById('borrow-equipment-name').value = name;
+      document.getElementById('borrow-modal').classList.add('show');
+    }
+
+    function closeBorrowModal() {
+      document.getElementById('borrow-modal').classList.remove('show');
+    }
+
+    // Form submit
+    document.getElementById('borrow-form').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const equipment_id = document.getElementById('borrow-equipment-id').value;
+      const borrower_name = document.getElementById('borrow-name').value;
+      const department = document.getElementById('borrow-department').value;
+      const phone = document.getElementById('borrow-phone').value;
+
+      try {
+        const res = await fetch('/api/borrow', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ equipment_id, borrower_name, department, phone })
+        });
+        const result = await res.json();
+        if (res.ok) {
+          showMessage('借用成功！', 'success');
+          closeBorrowModal();
+          loadEquipment();
+        } else {
+          showMessage(result.error || '借用失敗', 'error');
+        }
+      } catch (err) {
+        showMessage('借用失敗', 'error');
+      }
+    });
+
+    // Return equipment
+    async function returnEquipment(id) {
+      try {
+        const res = await fetch('/api/return', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ equipment_id: id })
+        });
+        if (res.ok) {
+          showMessage('歸還成功！', 'success');
+          loadEquipment();
+        } else {
+          showMessage('歸還失敗', 'error');
+        }
+      } catch (err) {
+        showMessage('歸還失敗', 'error');
+      }
+    }
+
+    // Add equipment
+    async function addEquipment() {
+      const name = document.getElementById('new-equipment-name').value.trim();
+      const category = document.getElementById('new-equipment-category').value.trim();
+
+      if (!name) {
+        showMessage('請輸入設備名稱', 'error');
+        return;
+      }
+
+      try {
+        const res = await fetch('/api/equipment', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ name, category })
+        });
+        if (res.ok) {
+          showMessage('新增設備成功！', 'success');
+          document.getElementById('new-equipment-name').value = '';
+          document.getElementById('new-equipment-category').value = '';
+          loadEquipment();
+        } else {
+          showMessage('新增失敗', 'error');
+        }
+      } catch (err) {
+        showMessage('新增失敗', 'error');
+      }
+    }
+
+    // Delete equipment
+    async function deleteEquipment(id, name) {
+      if (!confirm(`確定要刪除「${name}」嗎？`)) return;
+      try {
+        const res = await fetch(`/api/equipment/${id}`, { method: 'DELETE' });
+        if (res.ok) {
+          showMessage('刪除成功！', 'success');
+          loadManageEquipment();
+        } else {
+          showMessage('刪除失敗', 'error');
+        }
+      } catch (err) {
+        showMessage('刪除失敗', 'error');
+      }
+    }
+
+    // Show message
+    function showMessage(text, type) {
+      const msg = document.getElementById('message');
+      msg.textContent = text;
+      msg.className = `message show ${type}`;
+      setTimeout(() => msg.classList.remove('show'), 3000);
+    }
+
+    // Format date
+    function formatDate(dateStr) {
+      if (!dateStr) return '-';
+      const d = new Date(dateStr);
+      return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')} ${String(d.getHours()).padStart(2,'0')}:${String(d.getMinutes()).padStart(2,'0')}`;
+    }
+
+    // Close modal on outside click
+    document.getElementById('borrow-modal').addEventListener('click', (e) => {
+      if (e.target.id === 'borrow-modal') closeBorrowModal();
+    });
+
+    // Init
+    loadEquipment();
+  </script>
+</body>
+</html>

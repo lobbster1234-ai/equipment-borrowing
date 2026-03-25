@@ -1,0 +1,14 @@
+{
+  "name": "equipment-borrowing",
+  "version": "1.0.0",
+  "description": "儀器設備借用系統",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "node server.js"
+  },
+  "dependencies": {
+    "express": "^4.18.2",
+    "sqlite3": "^5.1.6"
+  }
+}
